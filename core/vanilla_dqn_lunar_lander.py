@@ -142,7 +142,7 @@ class VanillaDQN:
 
 #Training function
 def train_dqn(num_episodes=500, batch_size=32, update_frequency=4, target_update_frequency=100,
-              num_layers=2, hidden_dim=128, epsilon_decay=0.995):
+              num_layers=2, hidden_dim=128, epsilon_decay=0.995, learning_rate=1e-3):
     """Train the DQN agent on LunarLander"""
 
     # Create environment
@@ -155,7 +155,7 @@ def train_dqn(num_episodes=500, batch_size=32, update_frequency=4, target_update
 
     # Create agent
     agent = VanillaDQN(state_dim, action_dim, num_layers=num_layers,
-                       hidden_dim=hidden_dim, epsilon_decay=epsilon_decay)
+                       hidden_dim=hidden_dim, epsilon_decay=epsilon_decay, learning_rate=learning_rate)
 
     # Training loop
     episode_rewards = []
