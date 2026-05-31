@@ -2,6 +2,10 @@ results/baseline/plot.png
 results/baseline/model.pt
 results/baseline/results.pkl
 
+# Python cache
 __pycache__/
 *.pyc
 *.pyo
+
+# IDE
+/.idea
