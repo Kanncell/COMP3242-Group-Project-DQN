@@ -1,3 +1,7 @@
 results/baseline/plot.png
 results/baseline/model.pt
 results/baseline/results.pkl
+
+__pycache__/
+*.pyc
+*.pyo
