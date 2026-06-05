@@ -1,7 +1,5 @@
 results/baseline/plot.png
 results/baseline/model.pt
 results/baseline/results.pkl
-/results
 /.idea
 /core
-/results/ablations/epsilon_decay

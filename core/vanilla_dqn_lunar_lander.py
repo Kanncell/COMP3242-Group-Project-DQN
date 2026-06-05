@@ -7,10 +7,24 @@ import matplotlib.pyplot as plt
 from gymnasium import make
 import pickle
 import os
+import random
 
 # Device configuration
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
+
+# ======== Reproducibility support ========
+def set_global_seed(seed):
+    """Seed Python, NumPy, and PyTorch so repeated runs can be compared fairly."""
+    if seed is None:
+        return
+
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
+# ======== End reproducibility support ========
 
 #Q-Network Architecture
 class QNetwork(nn.Module):
@@ -142,11 +156,21 @@ class VanillaDQN:
 
 #Training function
 def train_dqn(num_episodes=500, batch_size=32, update_frequency=4, target_update_frequency=100,
-              num_layers=2, hidden_dim=128, epsilon_decay=0.995, learning_rate=1e-3):
+              num_layers=2, hidden_dim=128, epsilon_decay=0.995, learning_rate=1e-3,
+              seed=None):
     """Train the DQN agent on LunarLander"""
+
+    # ======== Reproducible training setup ========
+    # When a seed is provided, this keeps training randomness controlled but still
+    # gives each episode its own deterministic environment start.
+    set_global_seed(seed)
+    # ======== End reproducible training setup ========
 
     # Create environment
     env = make('LunarLander-v3')
+    if seed is not None:
+        env.action_space.seed(seed)
+
     state_dim = env.observation_space.shape[0]
     action_dim = env.action_space.n
 
@@ -162,7 +186,13 @@ def train_dqn(num_episodes=500, batch_size=32, update_frequency=4, target_update
     episode_losses = []
 
     for episode in range(num_episodes):
-        state, _ = env.reset()
+        # ======== Seeded episode reset ========
+        if seed is None:
+            state, _ = env.reset()
+        else:
+            state, _ = env.reset(seed=seed + episode)
+        # ======== End seeded episode reset ========
+
         episode_reward = 0
         episode_loss = []
         done = False
@@ -209,14 +239,23 @@ def train_dqn(num_episodes=500, batch_size=32, update_frequency=4, target_update
     return agent, episode_rewards, episode_losses
 
 #Evaluate DQN
-def evaluate_dqn(agent, num_episodes=10, render=False):
+def evaluate_dqn(agent, num_episodes=10, render=False, seed=None):
     """Evaluate the trained DQN agent"""
     env = make('LunarLander-v3', render_mode='human' if render else None)
+    if seed is not None:
+        env.action_space.seed(seed + 10000)
 
     episode_rewards = []
 
     for episode in range(num_episodes):
-        state, _ = env.reset()
+        # ======== Seeded evaluation reset ========
+        # Evaluation uses a separate seed range so test episodes do not mirror training.
+        if seed is None:
+            state, _ = env.reset()
+        else:
+            state, _ = env.reset(seed=seed + 10000 + episode)
+        # ======== End seeded evaluation reset ========
+
         episode_reward = 0
         done = False
 
