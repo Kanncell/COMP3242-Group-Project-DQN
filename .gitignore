@@ -2,5 +2,13 @@ results/baseline/plot.png
 results/baseline/model.pt
 results/baseline/results.pkl
 /.idea
-/core
 /results/ablations
+
+# Local/editor artifacts
+.DS_Store
+**/.DS_Store
+__pycache__/
+*.py[cod]
+
+# Jupyter artifacts
+.ipynb_checkpoints/

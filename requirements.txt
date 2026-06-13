@@ -1,0 +1,11 @@
+gymnasium[box2d]
+imageio
+imageio-ffmpeg
+jupyter
+matplotlib
+numpy
+pandas
+scipy
+torch
+torchaudio
+torchvision
